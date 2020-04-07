@@ -1,9 +1,46 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flip_card/flip_card.dart';
+import 'package:odsquiz/flash_page/FlashCard.dart';
 
-class FlashPage extends StatelessWidget {
+class FlashPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _FlashPageState();
+  }
+}
+
+class _FlashPageState extends State<FlashPage> {
+  int _total = 0;
+  int _current = 0;
+  final _flashCards = <FlashCard>[];
+
+  GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
+
+  @override
+  Future<void> didChangeDependencies() async {
+    super.didChangeDependencies();
+    if (_flashCards.isEmpty) {
+      await _retrieveFlashCards();
+    }
+    setState(() {
+      _total = _flashCards.length;
+    });
+  }
+
+  Future<void> _retrieveFlashCards() async {
+    final json = DefaultAssetBundle.of(context)
+        .loadString('assets/json/FlashCards.json');
+    final cardsList = JsonDecoder().convert(await json)['FlashCards'];
+    assert(cardsList is List);
+    print(cardsList);
+    for (final item in cardsList) {
+      _flashCards.add(FlashCard.fromJson(item));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,6 +49,7 @@ class FlashPage extends StatelessWidget {
       ),
       body: Column(
         children: <Widget>[
+          // Top info card
           Card(
             child: Container(
               height: 40,
@@ -19,75 +57,125 @@ class FlashPage extends StatelessWidget {
                 children: <Widget>[
                   Flexible(
                     child: LinearProgressIndicator(
-                      value: 0.5,
+                      value: (_current + 1) / _total,
                     ),
                     flex: 3,
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text('3 from 63'),
+                    child: Text('${_current + 1} from $_total'),
                   ),
                 ],
               ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.all(8),
-            child: FlipCard(
-              direction: FlipDirection.HORIZONTAL,
-              front: Card(
-                child: Container(
-                  height: 400,
-                  child: Column(
-                    children: <Widget>[
-                      Expanded(
-                        child: Center(
-                          child: Text('Hello, flash card!',
-                              style: Theme.of(context).textTheme.headline),
-                        ),
+
+          // Main body flashcard view
+          Expanded(
+            child: Padding(
+                padding: EdgeInsets.all(8),
+                child: FlipCard(
+                  key: cardKey,
+                  direction: FlipDirection.HORIZONTAL,
+                  front: Card(
+                    child: Container(
+                      height: 400,
+                      child: Column(
+                        children: <Widget>[
+                          Expanded(
+                            child: Center(
+                              child: Text(_flashCards[_current].front,
+                                  style: Theme.of(context).textTheme.headline),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text('Rotate me'),
+                            ),
+                          )
+                        ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text('Rotate me'),
-                        ),
-                      )
-                    ],
+                    ),
+                  ),
+                  back: Card(
+                    child: Container(
+                      height: 400,
+                      child: Column(
+                        children: <Widget>[
+                          Expanded(
+                            child: Center(
+                              child: Text(_flashCards[_current].back,
+                                  style: Theme.of(context).textTheme.headline),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text('Rotate me'),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                )),
+          ),
+
+          // Button Footer
+          Container(
+            height: 80,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: RawMaterialButton(
+                    child: Icon(Icons.arrow_back_ios, color: Colors.white),
+                    fillColor: Colors.blue,
+                    shape: CircleBorder(),
+                    elevation: 2.0,
+                    padding: EdgeInsets.all(16.0),
+                    onPressed: () {
+                      if (_current > 0) {
+                        setState(() {
+                          _current--;
+                          _resetFlipCard();
+                        });
+                      }
+                    },
                   ),
                 ),
-              ),
-              back: Card(
-                child: Container(
-                  height: 400,
-                  child: Column(
-                    children: <Widget>[
-                      Expanded(
-                        child: Center(
-                          child: Text('Hello, data scientist!',
-                              style: Theme.of(context).textTheme.headline),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text('Rotate me'),
-                        ),
-                      )
-                    ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: RawMaterialButton(
+                    child: Icon(Icons.arrow_forward_ios, color: Colors.white),
+                    fillColor: Colors.blue,
+                    shape: CircleBorder(),
+                    elevation: 2.0,
+                    padding: EdgeInsets.all(16.0),
+                    onPressed: () {
+                      if (_current < _total - 1) {
+                        setState(() {
+                          _current++;
+                          _resetFlipCard();
+                        });
+                      }
+                    },
                   ),
                 ),
-              ),
+              ],
             ),
           )
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: null,
-        backgroundColor: Colors.blue,
-        child: Icon(Icons.arrow_forward_ios),
-      ),
     );
+  }
+
+  void _resetFlipCard() {
+    if(!cardKey.currentState.isFront)
+      cardKey.currentState.toggleCard();
   }
 }

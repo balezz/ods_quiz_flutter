@@ -34,37 +34,44 @@ class TrainPage extends StatelessWidget {
           flex: 99,
           child: QuestCard(),
         ),
-        Container(
-          height: 80,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: RawMaterialButton(
-                  child: Icon(Icons.arrow_back_ios, color: Colors.white),
-                  fillColor: Colors.blue,
-                  shape: CircleBorder(),
-                  elevation: 2.0,
-                  padding: EdgeInsets.all(16.0),
-                  onPressed: () {},
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: RawMaterialButton(
-                  child: Icon(Icons.arrow_forward_ios, color: Colors.white),
-                  fillColor: Colors.blue,
-                  shape: CircleBorder(),
-                  elevation: 2.0,
-                  padding: EdgeInsets.all(16.0),
-                  onPressed: () {},
-                ),
-              ),
-            ],
-          ),
-        )
+        ButtonFooter()
       ]),
+    );
+  }
+}
+
+class ButtonFooter extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 80,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: RawMaterialButton(
+              child: Icon(Icons.arrow_back_ios, color: Colors.white),
+              fillColor: Colors.blue,
+              shape: CircleBorder(),
+              elevation: 2.0,
+              padding: EdgeInsets.all(16.0),
+              onPressed: () {},
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: RawMaterialButton(
+              child: Icon(Icons.arrow_forward_ios, color: Colors.white),
+              fillColor: Colors.blue,
+              shape: CircleBorder(),
+              elevation: 2.0,
+              padding: EdgeInsets.all(16.0),
+              onPressed: () {},
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

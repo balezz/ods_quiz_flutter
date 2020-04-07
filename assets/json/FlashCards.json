@@ -1,0 +1,34 @@
+{"FlashCards": [
+
+ { "id":"1",
+  "front": "Default type of integer values in pandas is int32",
+  "back": "Wrong. Default type is int64."
+ },
+
+
+ { "id":"2",
+  "front": "pd.describe() method generate descriptive statistics for every number feature ( int64 and float64 types).",
+  "back": "Right. Descriptive statistics include those that summarize the central tendency, dispersion and shape of a dataset’s distribution, excluding NaN values."
+ },
+
+ { "id":"3",
+  "front": "Ordinary least squares is the best estimation for linear regression.",
+  "back": "Wrong in general. The Gauss–Markov theorem states that the OLS estimator has the lowest sampling variance within the class of linear unbiased estimators, if the errors in the linear regression model are uncorrelated, have equal variances and expectation value of zero."
+ },
+
+ { "id":"4",
+  "front": "В линейной модели регрессии дисперсия Var - это ...",
+  "back": "вариативность ошибки при обучении модели на разных наборах данных."
+ },
+
+ { "id":"5",
+  "front": "В линейной модели регрессии квадрат смещения Bias - это ...",
+  "back": "средняя ошибка по всевозможным наборам данных."
+ },
+
+ { "id":"6",
+  "front": "Как регуляризация влияет на Var и Bias?",
+  "back": "Снижает Var, гарантируя регулярность матрицы [X^T X], но увеличивает Bias."
+ }
+]
+}
