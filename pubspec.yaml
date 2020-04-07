@@ -50,8 +50,8 @@ flutter:
   assets:
     - assets/icons/classroom.png
     - assets/icons/brain.png
-    - assets/icons/diploma.png
-    - assets/icons/exam.png
+    - assets/icons/examine.png
+    - assets/icons/training.png
     - assets/lectures/1.jpg
     - assets/lectures/2.jpg
     - assets/lectures/3.jpg

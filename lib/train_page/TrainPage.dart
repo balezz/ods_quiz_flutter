@@ -47,6 +47,7 @@ class TrainPage extends StatelessWidget {
                   shape: CircleBorder(),
                   elevation: 2.0,
                   padding: EdgeInsets.all(16.0),
+                  onPressed: () {},
                 ),
               ),
               Padding(
@@ -57,6 +58,7 @@ class TrainPage extends StatelessWidget {
                   shape: CircleBorder(),
                   elevation: 2.0,
                   padding: EdgeInsets.all(16.0),
+                  onPressed: () {},
                 ),
               ),
             ],
@@ -66,5 +68,3 @@ class TrainPage extends StatelessWidget {
     );
   }
 }
-
-

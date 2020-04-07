@@ -81,7 +81,7 @@ class CenterCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Image.asset(
-                        'assets/icons/diploma.png',
+                        'assets/icons/training.png',
                         height: 72,
                       ),
                     ),
@@ -100,7 +100,7 @@ class CenterCard extends StatelessWidget {
             Container(
               child: InkWell(
                 onTap: () {
-                  Navigator.pushNamed(context, '/lectures');
+                  Navigator.pushNamed(context, '/examine');
                 },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -108,7 +108,7 @@ class CenterCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Image.asset(
-                        'assets/icons/exam.png',
+                        'assets/icons/examine.png',
                         height: 72,
                       ),
                     ),
