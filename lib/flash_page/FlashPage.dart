@@ -85,7 +85,8 @@ class _FlashPageState extends State<FlashPage> {
                           Expanded(
                             child: Center(
                               child: Text(_flashCards[_current].front,
-                                  style: Theme.of(context).textTheme.headline),
+                                  style: Theme.of(context).textTheme.headline,
+                              textAlign: TextAlign.center,),
                             ),
                           ),
                           Padding(
@@ -107,7 +108,8 @@ class _FlashPageState extends State<FlashPage> {
                           Expanded(
                             child: Center(
                               child: Text(_flashCards[_current].back,
-                                  style: Theme.of(context).textTheme.headline),
+                                  style: Theme.of(context).textTheme.headline,
+                              textAlign: TextAlign.center,),
                             ),
                           ),
                           Padding(
