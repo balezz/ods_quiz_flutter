@@ -13,7 +13,7 @@ class FlashPage extends StatefulWidget {
 }
 
 class _FlashPageState extends State<FlashPage> {
-  int _total = 0;
+  int _total = 1;
   int _current = 0;
   final _flashCards = <FlashCard>[];
 

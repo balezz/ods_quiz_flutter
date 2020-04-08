@@ -63,6 +63,7 @@ flutter:
     - assets/lectures/9.jpg
     - assets/lectures/10.jpg
     - assets/json/FlashCards.json
+    - assets/json/OdsQuiz.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
