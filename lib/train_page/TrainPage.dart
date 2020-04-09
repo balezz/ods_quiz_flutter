@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
-import 'Quest.dart';
+import 'package:odsquiz/train_page/Quest.dart';
+import 'package:odsquiz/train_page/QuestCard.dart';
 
 class TrainPage extends StatefulWidget {
 
@@ -15,9 +17,11 @@ class TrainPage extends StatefulWidget {
 }
 
 class _TrainPageState extends State<TrainPage> {
+  StreamController<Quest> _controller = StreamController<Quest>();
+
   int _total = 1;
   int _current = 0;
-  List<Quest> _quests = [];
+  List _quests = <Quest>[];
 
 
   @override
@@ -53,6 +57,7 @@ class _TrainPageState extends State<TrainPage> {
         ),
       );
     }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Training'),
@@ -82,25 +87,7 @@ class _TrainPageState extends State<TrainPage> {
 
         // Quest Card
         Expanded(
-          child: Card(
-            child: Scrollbar(
-              child: ListView(
-                children: [
-                  Text(_quests[_current].question),
-                  Divider(),
-
-                  _quests[_current].code == null ? Container() : Text(_quests[_current].code),
-
-                  for(var choice in _quests[_current].choices) CheckboxListTile(
-                      value: false,
-                      onChanged: (bool value) {},
-                      controlAffinity: ListTileControlAffinity.leading,
-                      title: Text(
-                          choice['choice']
-                      ))],
-              ),
-            ),
-          ),
+          child: QuestCard(stream: _controller.stream, quest: _quests[_current],)
         ),
 
         // Button Footer
@@ -118,9 +105,10 @@ class _TrainPageState extends State<TrainPage> {
                   elevation: 2.0,
                   padding: EdgeInsets.all(16.0),
                   onPressed: () {
-                    if(_current > 0) {
+                    if (_current > 0) {
                       setState(() {
                         _current--;
+                        _controller.add(_quests[_current]);
                       });
                     }
                   },
@@ -135,9 +123,10 @@ class _TrainPageState extends State<TrainPage> {
                   elevation: 2.0,
                   padding: EdgeInsets.all(16.0),
                   onPressed: () {
-                    if(_current < _total - 1) {
+                    if (_current < _total - 1) {
                       setState(() {
                         _current++;
+                        _controller.add(_quests[_current]);
                       });
                     }
                   },
@@ -150,4 +139,3 @@ class _TrainPageState extends State<TrainPage> {
     );
   }
 }
-
