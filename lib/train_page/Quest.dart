@@ -4,8 +4,9 @@ class Quest {
   final String code;
   final String explanation;
   final List choices;
+  List checks = [false, false, false, false, false, false ];
 
-  const Quest(this.id, this.question, this.choices, this.code, this.explanation );
+  Quest(this.id, this.question, this.choices, this.code, this.explanation );
 
   Quest.fromJson(Map jsonMap)
       : assert(jsonMap['id'] != null),

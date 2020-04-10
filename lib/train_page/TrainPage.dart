@@ -6,8 +6,6 @@ import 'package:flutter/widgets.dart';
 import 'Quest.dart';
 
 class TrainPage extends StatefulWidget {
-
-
   @override
   State<StatefulWidget> createState() {
     return _TrainPageState();
@@ -18,7 +16,6 @@ class _TrainPageState extends State<TrainPage> {
   int _total = 1;
   int _current = 0;
   List<Quest> _quests = [];
-
 
   @override
   Future<void> didChangeDependencies() async {
@@ -32,8 +29,8 @@ class _TrainPageState extends State<TrainPage> {
   }
 
   Future<void> _retrieveQuests() async {
-    final json = DefaultAssetBundle.of(context)
-        .loadString('assets/json/OdsQuiz.json');
+    final json =
+        DefaultAssetBundle.of(context).loadString('assets/json/OdsQuiz.json');
     final questList = JsonDecoder().convert(await json)['questions'];
     assert(questList is List);
     print(questList);
@@ -81,27 +78,7 @@ class _TrainPageState extends State<TrainPage> {
         ),
 
         // Quest Card
-        Expanded(
-          child: Card(
-            child: Scrollbar(
-              child: ListView(
-                children: [
-                  Text(_quests[_current].question),
-                  Divider(),
-
-                  _quests[_current].code == null ? Container() : Text(_quests[_current].code),
-
-                  for(var choice in _quests[_current].choices) CheckboxListTile(
-                      value: false,
-                      onChanged: (bool value) {},
-                      controlAffinity: ListTileControlAffinity.leading,
-                      title: Text(
-                          choice['choice']
-                      ))],
-              ),
-            ),
-          ),
-        ),
+        Expanded(child: getQuestCard()),
 
         // Button Footer
         Container(
@@ -118,7 +95,7 @@ class _TrainPageState extends State<TrainPage> {
                   elevation: 2.0,
                   padding: EdgeInsets.all(16.0),
                   onPressed: () {
-                    if(_current > 0) {
+                    if (_current > 0) {
                       setState(() {
                         _current--;
                       });
@@ -135,7 +112,7 @@ class _TrainPageState extends State<TrainPage> {
                   elevation: 2.0,
                   padding: EdgeInsets.all(16.0),
                   onPressed: () {
-                    if(_current < _total - 1) {
+                    if (_current < _total - 1) {
                       setState(() {
                         _current++;
                       });
@@ -147,6 +124,44 @@ class _TrainPageState extends State<TrainPage> {
           ),
         )
       ]),
+    );
+  }
+
+  Card getQuestCard() {
+    List checkTiles = <CheckboxListTile>[];
+    for (int i = 0; i < _quests[_current].choices.length; i++) {
+      var choice = _quests[_current].choices[i];
+      var tile = CheckboxListTile(
+          value: _quests[_current].checks[i],
+          onChanged: (bool value) {
+            setState(() {
+               _quests[_current].checks[i] = value;
+              print(i);
+            });
+          },
+          controlAffinity: ListTileControlAffinity.leading,
+          title: Text(choice['choice']));
+      checkTiles.add(tile);
+    }
+
+    return Card(
+      child: Scrollbar(
+        child: ListView(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(_quests[_current].question, style: Theme.of(context).textTheme.subhead,),
+            ),
+            Divider(indent: 8, endIndent: 8,),
+            _quests[_current].code == null
+                ? Container()
+                : Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(_quests[_current].code),
+                ),
+          ] + checkTiles,
+        ),
+      ),
     );
   }
 }

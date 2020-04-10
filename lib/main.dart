@@ -3,7 +3,7 @@ import 'package:odsquiz/flash_page/FlashPage.dart';
 import 'package:odsquiz/lecture_page/LecturesPage.dart';
 import 'package:odsquiz/train_page//TrainPage.dart';
 import 'package:odsquiz/examine_page/ExaminePage.dart';
-import 'home_page/HomePage.dart';
+import 'package:odsquiz/home_page/HomePage.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'ODS Quiz',
       theme: ThemeData(
-        primarySwatch: Colors.grey,
+        primarySwatch: Colors.blue,
       ),
       initialRoute: '/',
       routes: {
