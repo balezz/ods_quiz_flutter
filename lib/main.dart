@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:odsquiz/flash_page/FlashPage.dart';
-import 'package:odsquiz/lecture_page/LecturesPage.dart';
-import 'package:odsquiz/train_page//TrainPage.dart';
-import 'package:odsquiz/examine_page/ExaminePage.dart';
-import 'package:odsquiz/home_page/HomePage.dart';
+import 'package:odsquiz/ui/FlashPage.dart';
+import 'package:odsquiz/ui/LecturesPage.dart';
+import 'package:odsquiz/ui/TrainPage.dart';
+import 'package:odsquiz/ui/ExaminePage.dart';
+import 'package:odsquiz/ui/HomePage.dart';
 
 void main() => runApp(MyApp());
 

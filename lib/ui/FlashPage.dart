@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flip_card/flip_card.dart';
-import 'package:odsquiz/flash_page/FlashCard.dart';
+import 'package:odsquiz/model/FlashCard.dart';
 
 class FlashPage extends StatefulWidget {
   @override

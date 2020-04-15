@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
-import 'Quest.dart';
+import 'package:odsquiz/DBProvider.dart';
+import '../model/Quest.dart';
 
 class TrainPage extends StatefulWidget {
   @override
@@ -15,29 +16,22 @@ class TrainPage extends StatefulWidget {
 class _TrainPageState extends State<TrainPage> {
   int _total = 1;
   int _current = 0;
-  List<Quest> _quests = [];
+
+  List<Question> _quests = [];
 
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
+    var _tmp = <Question>[];
     if (_quests.isEmpty) {
-      await _retrieveQuests();
+       _tmp = await DBProvider.db.retrieveQuests(context);
     }
     setState(() {
+      _quests = _tmp;
       _total = _quests.length;
     });
   }
 
-  Future<void> _retrieveQuests() async {
-    final json =
-        DefaultAssetBundle.of(context).loadString('assets/json/OdsQuiz.json');
-    final questList = JsonDecoder().convert(await json)['questions'];
-    assert(questList is List);
-    print(questList);
-    for (final item in questList) {
-      _quests.add(Quest.fromJson(item));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +44,7 @@ class _TrainPageState extends State<TrainPage> {
         ),
       );
     }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Training'),
@@ -78,7 +73,7 @@ class _TrainPageState extends State<TrainPage> {
         ),
 
         // Quest Card
-        Expanded(child: getQuestCard()),
+        Expanded(child: _getQuestCard()),
 
         // Button Footer
         Container(
@@ -89,7 +84,7 @@ class _TrainPageState extends State<TrainPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: RawMaterialButton(
-                  child: Icon(Icons.arrow_back_ios, color: Colors.white),
+                  child: Icon(Icons.chevron_left, color: Colors.white),
                   fillColor: Colors.blue,
                   shape: CircleBorder(),
                   elevation: 2.0,
@@ -106,7 +101,7 @@ class _TrainPageState extends State<TrainPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: RawMaterialButton(
-                  child: Icon(Icons.arrow_forward_ios, color: Colors.white),
+                  child: Icon(Icons.chevron_right, color: Colors.white),
                   fillColor: Colors.blue,
                   shape: CircleBorder(),
                   elevation: 2.0,
@@ -127,20 +122,21 @@ class _TrainPageState extends State<TrainPage> {
     );
   }
 
-  Card getQuestCard() {
+  /// Iterate over choices for current question
+  Card _getQuestCard() {
     List checkTiles = <CheckboxListTile>[];
     for (int i = 0; i < _quests[_current].choices.length; i++) {
       var choice = _quests[_current].choices[i];
       var tile = CheckboxListTile(
-          value: _quests[_current].checks[i],
+          value: _quests[_current].choices[i].selected,
           onChanged: (bool value) {
             setState(() {
-               _quests[_current].checks[i] = value;
-              print(i);
+               _quests[_current].choices[i].selected = value;
+               DBProvider.db.setChoice(_current, i, value);
             });
           },
           controlAffinity: ListTileControlAffinity.leading,
-          title: Text(choice['choice']));
+          title: Text(choice.choice));
       checkTiles.add(tile);
     }
 
