@@ -11,7 +11,7 @@ import 'model/Quest.dart';
 class DBProvider {
   DBProvider._();
 
-  static final DBProvider db = DBProvider._();
+  static final DBProvider dbp = DBProvider._();
 
   static Database _database;
 
@@ -29,23 +29,57 @@ class DBProvider {
   Future<Database> initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "QuestDB.db");
-    return await openDatabase(path, version: 1,
+    return await openDatabase(
+        path,
+        version: 1,
         onOpen: (db) {},
-        onCreate: (Database db, int version) async {
-          await db.execute("CREATE TABLE Client ("
-              "id INTEGER PRIMARY KEY,"
-              "first_name TEXT,"
-              "last_name TEXT,"
-              "blocked BIT"
-              ")");
-        });
+        onCreate: _initTables
+    );
   }
 
-  retrieveQuests(BuildContext context) async {
+  Future<void> _initTables(Database db, int version) async {
+    await db.execute("CREATE TABLE questions ("
+        "id INTEGER PRIMARY KEY,"
+        "question TEXT,"
+        "code TEXT,"
+        "explanation TEXT,"
+        "answered INTEGER,"
+        "ansright INTEGER"
+        ")"
+    );
+    await db.execute("CREATE TABLE choices ("
+        "id INTEGER PRIMARY KEY,"
+        "choice TEXT,"
+        "right INTEGER,"
+        "selected INTEGER,"
+        "quest_id INTEGER"
+        ")"
+    );
+  }
+
+  Future<Question> insert(Question question) async {
+    question.id = await _database.insert('questions', question.toMap());
+    return question;
+  }
+
+  Future<void> insertAll() async {
+    for(Question question in quests) {
+      question.id = await _database.insert('questions', question.toMap());
+    }
+  }
+
+  Future<void> readAll() async {
+    List<Map<String, dynamic>> records = await _database.query('questions');
+    for (var question in records){
+      quests.add(Question.fromJson(question));
+    }
+  }
+
+  retrieveQuestsJson(BuildContext context) async {
     final json =
     DefaultAssetBundle.of(context).loadString('assets/json/OdsQuiz.json');
     final questList = JsonDecoder().convert(await json)['questions'];
-    for(var quest in questList){
+    for (var quest in questList) {
       quests.add(Question.fromJson(quest));
     }
     assert(quests is List<Question>);
@@ -54,7 +88,8 @@ class DBProvider {
 
   void setChoice(int questIndex, int choiceIndex, bool value) {
     print('todo: data base set question: ${quests[questIndex].question} '
-        'choice: ${quests[questIndex].choices[choiceIndex].choice}  value $value');
+        'choice: ${quests[questIndex].choices[choiceIndex]
+        .choice}  value $value');
   }
 
 }

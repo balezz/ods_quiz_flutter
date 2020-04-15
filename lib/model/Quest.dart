@@ -5,7 +5,7 @@ Question questionFromJson(String str) => Question.fromJson(json.decode(str));
 String questionToJson(Question data) => json.encode(data.toJson());
 
 class Question {
-  String id;
+  int id;
   String question;
   String code;
   String explanation;
@@ -24,7 +24,7 @@ class Question {
   });
 
   factory Question.fromJson(Map<String, dynamic> json) => Question(
-    id: json["id"],
+    id: int.parse(json["id"]),
     question: json["question"],
     code: json["code"],
     explanation: json["explanation"],
@@ -42,6 +42,16 @@ class Question {
     "ansright": ansright,
     "choices": List<dynamic>.from(choices.map((x) => x.toJson())),
   };
+
+  Map<String, dynamic> toMap() => {
+    "id": id,
+    "question": question,
+    "code": code,
+    "explanation": explanation,
+    "answered": answered,
+    "ansright": ansright
+  };
+
 }
 
 class Choice {

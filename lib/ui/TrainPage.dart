@@ -24,7 +24,7 @@ class _TrainPageState extends State<TrainPage> {
     super.didChangeDependencies();
     var _tmp = <Question>[];
     if (_quests.isEmpty) {
-       _tmp = await DBProvider.db.retrieveQuests(context);
+       _tmp = await DBProvider.dbp.retrieveQuestsJson(context);
     }
     setState(() {
       _quests = _tmp;
@@ -132,7 +132,7 @@ class _TrainPageState extends State<TrainPage> {
           onChanged: (bool value) {
             setState(() {
                _quests[_current].choices[i].selected = value;
-               DBProvider.db.setChoice(_current, i, value);
+               DBProvider.dbp.setChoice(_current, i, value);
             });
           },
           controlAffinity: ListTileControlAffinity.leading,
