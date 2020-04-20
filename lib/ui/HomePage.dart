@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
+import '../model/Quest.dart';
+import 'package:odsquiz/DBProvider.dart';
 
 
 class HomePage extends StatelessWidget {
@@ -20,7 +22,7 @@ class HomePage extends StatelessWidget {
             children: <Widget>[
               TopCard(),
               CenterCard(),
-              BottomCard()
+              FooterCard()
             ],
           ),
         ),
@@ -38,6 +40,26 @@ class TopCard extends StatefulWidget {
 }
 
 class _TopCardState extends State<TopCard> {
+  List<Question> _quests = [];
+  int _total;
+  int _correct;
+  int _attempted;
+  int _remained;
+
+
+  @override
+  Future<void> didChangeDependencies() async {
+    super.didChangeDependencies();
+    var _tmp = <Question>[];
+    if (_quests.isEmpty) {
+      _tmp = await DBProvider.dbp.getQuestions(context);
+    }
+    setState(() {
+      _quests = _tmp;
+      _total = _quests.length;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -279,7 +301,7 @@ class CenterCard extends StatelessWidget {
 
 }
 
-class BottomCard extends StatelessWidget{
+class FooterCard extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return InkWell(

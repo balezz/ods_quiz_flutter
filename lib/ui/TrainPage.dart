@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
@@ -17,21 +15,7 @@ class _TrainPageState extends State<TrainPage> {
   int _total = 1;
   int _current = 0;
 
-  List<Question> _quests = [];
-
-  @override
-  Future<void> didChangeDependencies() async {
-    super.didChangeDependencies();
-    var _tmp = <Question>[];
-    if (_quests.isEmpty) {
-       _tmp = await DBProvider.dbp.retrieveQuestsJson(context);
-    }
-    setState(() {
-      _quests = _tmp;
-      _total = _quests.length;
-    });
-  }
-
+  List<Question> _quests = DBProvider.dbp.questions;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +28,7 @@ class _TrainPageState extends State<TrainPage> {
         ),
       );
     }
-
+    _total = _quests.length;
     return Scaffold(
       appBar: AppBar(
         title: Text('Training'),

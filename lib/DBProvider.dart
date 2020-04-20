@@ -8,6 +8,9 @@ import 'package:path/path.dart';
 
 import 'model/Quest.dart';
 
+const String QUESTIONS_TABLE_NAME = 'questions';
+const String CHOICES_TABLE_NAME = 'choices';
+
 class DBProvider {
   DBProvider._();
 
@@ -15,81 +18,111 @@ class DBProvider {
 
   static Database _database;
 
-  List<Question> quests = [];
-
-  Future<Database> get database async {
-    if (_database != null)
-      return _database;
-
-    // if _database is null we instantiate it
-    _database = await initDB();
-    return _database;
-  }
+  List<Question> questions = [];
 
   Future<Database> initDB() async {
+    print('initDB() invoked');
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "QuestDB.db");
-    return await openDatabase(
-        path,
-        version: 1,
-        onOpen: (db) {},
-        onCreate: _initTables
-    );
+    Database db = await openDatabase(path,
+        version: 1, onOpen: (db) {}, onCreate: _initTables);
+    print("Database initialized: $db");
+    return db;
   }
 
   Future<void> _initTables(Database db, int version) async {
-    await db.execute("CREATE TABLE questions ("
+    print('_initTables() invoked');
+    await db.execute("CREATE TABLE $QUESTIONS_TABLE_NAME ("
         "id INTEGER PRIMARY KEY,"
         "question TEXT,"
         "code TEXT,"
         "explanation TEXT,"
         "answered INTEGER,"
         "ansright INTEGER"
-        ")"
-    );
-    await db.execute("CREATE TABLE choices ("
-        "id INTEGER PRIMARY KEY,"
+        ")");
+    await db.execute("CREATE TABLE $CHOICES_TABLE_NAME ("
+        "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
         "choice TEXT,"
         "right INTEGER,"
         "selected INTEGER,"
-        "quest_id INTEGER"
-        ")"
-    );
+        "qid INTEGER"
+        ")");
   }
 
-  Future<Question> insert(Question question) async {
-    question.id = await _database.insert('questions', question.toMap());
-    return question;
-  }
-
-  Future<void> insertAll() async {
-    for(Question question in quests) {
-      question.id = await _database.insert('questions', question.toMap());
+  Future<List<Question>> getQuestions(BuildContext context) async {
+    print('getQuestions() invoked');
+    if (_database == null) {
+      _database = await initDB();
+      questions = await readQuestions();
     }
-  }
-
-  Future<void> readAll() async {
-    List<Map<String, dynamic>> records = await _database.query('questions');
-    for (var question in records){
-      quests.add(Question.fromJson(question));
+    if (questions.isEmpty) {
+      questions = await retrieveQuestsJson(context);
     }
+    return questions;
   }
 
   retrieveQuestsJson(BuildContext context) async {
+    print('retrieveQuestsJson() invoked');
     final json =
     DefaultAssetBundle.of(context).loadString('assets/json/OdsQuiz.json');
     final questList = JsonDecoder().convert(await json)['questions'];
     for (var quest in questList) {
-      quests.add(Question.fromJson(quest));
+      questions.add(Question.fromJson(quest));
     }
-    assert(quests is List<Question>);
-    return quests;
+    assert(questions is List<Question>);
+    return questions;
   }
+
+
+  // Repository methods //
+
+  Future<Question> insertQuestion(Question question) async {
+    question.id =
+        await _database.insert(QUESTIONS_TABLE_NAME, question.toMap());
+    return question;
+  }
+
+  Future<void> insertQuestions(List<Question> quests) async {
+    print('insertAll() invoked, $quests inserting...');
+    for (Question question in quests) {
+      question = await insertQuestion(question);
+      for (Choice choice in question.choices) {
+        insertChoice(choice);
+      }
+      print('Question ${question.id} inserted');
+    }
+  }
+
+  Future<List<Question>> readQuestions() async {
+    print('readQuestions() invoked');
+    List<Map<String, dynamic>> sqlQuestions =
+        await _database.query(QUESTIONS_TABLE_NAME);
+    for (var sqlQuestion in sqlQuestions) {
+      Question question = Question.fromSql(sqlQuestion);
+      question.choices = await readChoices(question.id);
+      questions.add(question);
+      print('sqlQuestion ${sqlQuestion['id']} was read from database');
+    }
+    return questions;
+  }
+
+  Future<Choice> insertChoice(Choice choice) async {
+    choice.qId = await _database.insert(CHOICES_TABLE_NAME, choice.toJson());
+    return choice;
+  }
+
+  /// return from database all choices with defined questionId
+  Future<List<Choice>> readChoices(int questId) async {
+    List<Map<String, dynamic>> sqlChoices = await _database
+        .query(CHOICES_TABLE_NAME, where: 'qId', whereArgs: [questId]);
+    return sqlChoices.map((x) => Choice.fromJson(x, questId));
+  }
+
+
+
 
   void setChoice(int questIndex, int choiceIndex, bool value) {
-    print('todo: data base set question: ${quests[questIndex].question} '
-        'choice: ${quests[questIndex].choices[choiceIndex]
-        .choice}  value $value');
+    print('todo: data base set question: ${questions[questIndex].question} '
+        'choice: ${questions[questIndex].choices[choiceIndex].choice}  value $value');
   }
-
 }

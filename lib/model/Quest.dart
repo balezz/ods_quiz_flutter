@@ -9,8 +9,8 @@ class Question {
   String question;
   String code;
   String explanation;
-  String answered;
-  String ansright;
+  bool answered;
+  bool ansright;
   List<Choice> choices;
 
   Question({
@@ -28,9 +28,19 @@ class Question {
     question: json["question"],
     code: json["code"],
     explanation: json["explanation"],
-    answered: json["answered"],
-    ansright: json["ansright"],
-    choices: List<Choice>.from(json["choices"].map((x) => Choice.fromJson(x))),
+    answered: json["answered"] == "1",
+    ansright: json["ansright"] == "1",
+    choices: [for (var jq in json["choices"])
+      Choice.fromJson(jq, int.parse(json["id"]))],
+  );
+
+  factory Question.fromSql(Map<String, dynamic> json) => Question(
+    id: json["id"],
+    question: json["question"],
+    code: json["code"],
+    explanation: json["explanation"],
+    answered: json["answered"] == 1,
+    ansright: json["ansright"] == 1,
   );
 
   Map<String, dynamic> toJson() => {
@@ -44,7 +54,7 @@ class Question {
   };
 
   Map<String, dynamic> toMap() => {
-    "id": id,
+    "id": id.toString(),
     "question": question,
     "code": code,
     "explanation": explanation,
@@ -55,25 +65,29 @@ class Question {
 }
 
 class Choice {
+  int qId;
   String choice;
-  String right;
+  bool right;
   bool selected;
 
   Choice({
+    this.qId,
     this.choice,
     this.right,
     this.selected,
   });
 
-  factory Choice.fromJson(Map<String, dynamic> json) => Choice(
+  factory Choice.fromJson(Map<String, dynamic> json, id) => Choice(
+    qId: id,
     choice: json["choice"],
-    right: json["right"],
+    right: json["right"] == "1",
     selected: json["selected"] == "1",
   );
 
   Map<String, dynamic> toJson() => {
+    "qId": qId,
     "choice": choice,
-    "right": right,
+    "right": right ? "1" : "0",
     "selected": selected ? "1" : "0",
   };
 }
