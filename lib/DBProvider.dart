@@ -64,7 +64,7 @@ class DBProvider {
   retrieveQuestsJson(BuildContext context) async {
     print('retrieveQuestsJson() invoked');
     final json =
-    DefaultAssetBundle.of(context).loadString('assets/json/OdsQuiz.json');
+        DefaultAssetBundle.of(context).loadString('assets/json/OdsQuiz.json');
     final questList = JsonDecoder().convert(await json)['questions'];
     for (var quest in questList) {
       questions.add(Question.fromJson(quest));
@@ -73,17 +73,29 @@ class DBProvider {
     return questions;
   }
 
-
   // Repository methods //
 
   Future<Question> insertQuestion(Question question) async {
     question.id =
-        await _database.insert(QUESTIONS_TABLE_NAME, question.toMap());
+        await _database.insert(QUESTIONS_TABLE_NAME, question.toMapSql());
+    return question;
+  }
+
+  Future<Question> updateQuestion(Question question) async {
+    print('updateQuestion() invoked');
+    question.id = await _database.update(
+      QUESTIONS_TABLE_NAME,
+      question.toMapSql(),
+      where: 'id = ?',
+      whereArgs: [question.id]);
+    for(var choice in question.choices){
+      _database.update(CHOICES_TABLE_NAME, choice.toJson());
+    }
     return question;
   }
 
   Future<void> insertQuestions(List<Question> quests) async {
-    print('insertAll() invoked, $quests inserting...');
+    print('insertQuestions() invoked, $quests inserting...');
     for (Question question in quests) {
       question = await insertQuestion(question);
       for (Choice choice in question.choices) {
@@ -114,12 +126,13 @@ class DBProvider {
   /// return from database all choices with defined questionId
   Future<List<Choice>> readChoices(int questId) async {
     List<Map<String, dynamic>> sqlChoices = await _database
-        .query(CHOICES_TABLE_NAME, where: 'qId', whereArgs: [questId]);
-    return sqlChoices.map((x) => Choice.fromJson(x, questId));
+        .query(CHOICES_TABLE_NAME, where: 'qId = ?', whereArgs: [questId]);
+    List<Choice> choices = [];
+    for (var choice in sqlChoices) {
+      choices.add(Choice.fromJson(choice, questId));
+    }
+    return choices;
   }
-
-
-
 
   void setChoice(int questIndex, int choiceIndex, bool value) {
     print('todo: data base set question: ${questions[questIndex].question} '

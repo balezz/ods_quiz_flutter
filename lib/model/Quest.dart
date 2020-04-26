@@ -53,13 +53,13 @@ class Question {
     "choices": List<dynamic>.from(choices.map((x) => x.toJson())),
   };
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMapSql() => {
     "id": id.toString(),
     "question": question,
     "code": code,
     "explanation": explanation,
-    "answered": answered,
-    "ansright": ansright
+    "answered": answered ? 1 : 0,
+    "ansright": ansright ? 1 : 0
   };
 
 }
